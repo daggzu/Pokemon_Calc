@@ -3,17 +3,27 @@ class Type:
     
     def __init__(self, name):
         self.name = name
+        self.immune = {"default": 0}
         self.super_effective = {"default": 2}
         self.not_very_effective = {"default": 0.5}
         # Rest are neutral (1x)
         
-    def get_multiplier(self, other_type):
+    def get_multiplier(self, other_types):
+        # Check for immunity first
+        for other_type in other_types:
+            if self.immune.get(other_type) == 0:
+                return 0  # Immunity
+
+        # If no immunity, check for super effectiveness and not very effectiveness
         for multiplier_dict in [self.super_effective, self.not_very_effective]:
-            multiplier = multiplier_dict.get(other_type)
-            if multiplier is not None:
-                return multiplier
-        # If no match is found, default to neutral (1x)
-        return 1
+            for other_type in other_types:
+                multiplier = multiplier_dict.get(other_type)
+                if multiplier is not None:
+                    return multiplier
+                # If no match is found, default to neutral lol (1x)
+                return 1 
+            #redundant? idk yet(note for later)
+
     
     def get_offense_multiplier(self, other_types):
         # Checking if one type is super effective and the other is not very effective
