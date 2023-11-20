@@ -1,6 +1,4 @@
 class Pokemon:
-    
-    # Template dictionary for base stats
     base_stats_template = {
         "HP": 0,
         "Attack": 0,
@@ -9,13 +7,13 @@ class Pokemon:
         "Special Defense": 0,
         "Speed": 0
     }
-    
+
     def __init__(self, name, base_stats, abilities, types):
         self.name = name
         self.base_stats = {stat: base_stats.get(stat, 0) for stat in self.base_stats_template}
         self.abilities = abilities
         self.types = types
-        
+
     def display_info(self):
         print(f"Name: {self.name}")
         print(f"Base Stats:")
@@ -26,5 +24,22 @@ class Pokemon:
         print("Abilities:")
         for ability in self.abilities:
             print(ability)
-        
-        
+
+    def get_offense_multiplier(self, opponent_types):
+        multiplier = 1
+        for my_type in self.types:
+            multiplier *= my_type.get_offense_multiplier(opponent_types)
+        return multiplier
+
+    def get_defense_multiplier(self, opponent_types):
+        multiplier = 1
+        for my_type in self.types:
+            multiplier *= my_type.get_defense_multiplier(opponent_types)
+        return multiplier
+
+# Example Usage:
+# Assuming i have a WaterType class in the future (im tired)
+water_pokemon = Pokemon("Squirtle", {"HP": 44, "Attack": 48, "Defense": 65}, ["Torrent"], [WaterType()])
+water_pokemon.display_info()
+print("Offensive Multiplier:", water_pokemon.get_offense_multiplier(["Fire", "Ground"]))
+print("Defensive Multiplier:", water_pokemon.get_defense_multiplier(["Electric", "Fire"]))

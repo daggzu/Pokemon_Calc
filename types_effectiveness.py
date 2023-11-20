@@ -1,47 +1,56 @@
 class Type:
-    """A base class representing a generic Pokemon type"""
-    
-    def __init__(self, name):
-        self.name = name
-        self.immune = {"default": 0}
-        self.super_effective = {"default": 2}
-        self.not_very_effective = {"default": 0.5}
-        # Rest are neutral (1x)
-        
-    def get_multiplier(self, other_types):
-        # Check for immunity first
-        for other_type in other_types:
-            if self.immune.get(other_type) == 0:
-                return 0  # Immunity
+    def __init__(self):
+        self.immune_offense = {"default": 0}
+        self.super_effective_offense = {"default": 2}
+        self.not_very_effective_offense = {"default": 0.5}
+        # The rest are neutral (1x)
 
-        # If no immunity, check for super effectiveness and not very effectiveness
-        for multiplier_dict in [self.super_effective, self.not_very_effective]:
-            for other_type in other_types:
-                multiplier = multiplier_dict.get(other_type)
-                if multiplier is not None:
-                    return multiplier
-                # If no match is found, default to neutral lol (1x)
-                return 1 
-            #redundant? idk yet(note for later)
+        self.super_effective_defense = {"default": 2}
+        self.not_very_effective_defense = {"default": 0.5}
+        # The rest are neutral (1x)
 
-    
-    def get_offense_multiplier(self, other_types):
-        # Checking if one type is super effective and the other is not very effective
-        super_effective_count = sum(1 for other_type in other_types if self.get_multiplier(other_type) == 2)
-        not_very_effective_count = sum(1 for other_type in other_types if self.get_multiplier(other_type) == 0.5)
-        
-        if super_effective_count > 0 and not_very_effective_count > 0:
+    def get_offense_multiplier(self, opponent_types):
+        if any(opponent_type in self.immune_offense for opponent_type in opponent_types):
+            return 0
+
+        dual_type_super = tuple(opponent_types)
+        if dual_type_super in self.super_effective_offense:
+            return 4
+
+        dual_type_not_very = tuple(opponent_types)
+        if dual_type_not_very in self.not_very_effective_offense:
+            return 0.25
+
+        for opponent_type in opponent_types:
+            if opponent_type in self.super_effective_offense:
+                return 2
+            elif opponent_type in self.not_very_effective_offense:
+                return 0.5
+
+        return 1  # Default to neutral if none of the conditions are met
+
+    def get_defense_multiplier(self, opponent_types):
+        max_super_effective = max(self.super_effective_defense.get(opponent_type, 1) for opponent_type in opponent_types)
+        min_not_very_effective = min(self.not_very_effective_defense.get(opponent_type, 1) for opponent_type in opponent_types)
+
+        if max_super_effective > 1:
+            return max_super_effective
+        elif min_not_very_effective < 1:
+            return min_not_very_effective
+        else:
             return 1  # Neutral effectiveness
-        
-        # Checking if the dual typing is found twice in the super effective dict
-        dual_type_key = tuple(sorted(other_types))
-        if dual_type_key in self.super_effective:
-            return 4  # 4x effectiveness
-        
-        # Checking if the dual typing is found twice in the not very effective dict
-        if dual_type_key in self.not_very_effective:
-            return 0.25  # 1/4 effectiveness (4x resistance)
-        
-        # For other cases, calculate the overall multiplier by considering each type individually
-        multipliers = [self.get_multiplier(other_type) for other_type in other_types]
-        return max(multipliers) if max(multipliers) != 0 else 1
+
+
+class WaterType(Type):
+    def __init__(self):
+        super().__init__()
+        # Customize specific values for WaterType
+        self.super_effective_offense.update({"Fire": 2, "Ground": 2})
+        self.not_very_effective_offense.update({"Grass": 0.5, "Electric": 0.5})
+        self.super_effective_defense.update({"Electric": 2})
+        self.not_very_effective_defense.update({"Fire": 0.5, "Water": 0.5})
+
+# Example usage:
+water_type = WaterType()
+print(water_type.get_offense_multiplier(["Fire", "Ground"]))  # Output: 4 (super effective)
+print(water_type.get_defense_multiplier(["Electric", "Fire"]))  # Output: 0.5 (not very effective)
