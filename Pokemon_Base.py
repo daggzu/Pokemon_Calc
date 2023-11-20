@@ -36,10 +36,3 @@ class Pokemon:
         for my_type in self.types:
             multiplier *= my_type.get_defense_multiplier(opponent_types)
         return multiplier
-
-# Example Usage:
-# Assuming i have a WaterType class in the future (im tired)
-water_pokemon = Pokemon("Squirtle", {"HP": 44, "Attack": 48, "Defense": 65}, ["Torrent"], [WaterType()])
-water_pokemon.display_info()
-print("Offensive Multiplier:", water_pokemon.get_offense_multiplier(["Fire", "Ground"]))
-print("Defensive Multiplier:", water_pokemon.get_defense_multiplier(["Electric", "Fire"]))
