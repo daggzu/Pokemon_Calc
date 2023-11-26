@@ -31,8 +31,24 @@ class Pokemon:
             multiplier *= my_type.get_offense_multiplier(opponent_types)
         return multiplier
 
-    def get_defense_multiplier(self, opponent_types):
+    def get_defense_multiplier(self, move_type_opponent):
         multiplier = 1
         for my_type in self.types:
-            multiplier *= my_type.get_defense_multiplier(opponent_types)
+            multiplier *= my_type.get_defense_multiplier(move_type_opponent)
         return multiplier
+
+# Create an instance of WaterType
+water_type = WaterType()
+
+# Create a Water-type Pokemon
+squirtle = Pokemon("Squirtle", {"HP": 44, "Attack": 48, "Defense": 65}, ["Torrent"], [water_type])
+
+# Display Pokemon info
+squirtle.display_info()
+
+# Test offense and defense multipliers
+opponent_types = ["Fire", "Ground"]
+print("Offense Multiplier:", squirtle.get_offense_multiplier(opponent_types))  # Output: 4 (super effective)
+
+move_type_opponent = "Electric"
+print("Defense Multiplier:", squirtle.get_defense_multiplier(move_type_opponent))  # Output: 2 (super effective)
