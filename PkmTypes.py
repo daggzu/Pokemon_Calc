@@ -53,7 +53,7 @@ class WaterType(Type):
 
 # Example usage:
 water_type = WaterType()
-opponent_types = ["Fire", "Ground"]
+opponent_types = ["Fire", "Ground"] 
 
 # Test offense multiplier
 print(water_type.get_offense_multiplier(opponent_types))  # Output: 4 (super effective)
